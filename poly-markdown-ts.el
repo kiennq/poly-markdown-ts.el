@@ -33,7 +33,7 @@
 (define-hostmode poly-markdown-ts-hostmode
   :mode 'markdown-ts-mode)
 
-(define-auto-innermode poly-markdown-ts-fenced-code-innermode
+(define-auto-innermode poly-markdown-fenced-code-innermode
   :head-matcher (cons "^[ \t]*\\(```[ \t]*{?[[:alpha:].=].*\n\\)" 1)
   :tail-matcher (cons "^[ \t]*\\(```\\)[ \t]*$" 1)
   :mode-matcher (cons "```[ \t]*{?[.=]?\\(?:lang *= *\\)?\\([^ \t\n;=,}]+\\)" 1)
@@ -42,12 +42,40 @@
 ;;;###autoload (autoload 'poly-markdown-ts-mode "poly-markdown-ts")
 (define-polymode poly-markdown-ts-mode
   :hostmode 'poly-markdown-ts-hostmode
-  :innermodes '(poly-markdown-ts-fenced-code-innermode))
+  :innermodes '(poly-markdown-fenced-code-innermode))
 
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.md\\'" . poly-markdown-ts-mode))
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . poly-markdown-ts-mode))
+
+
+
+(declare-function 'markdown-mode "ext:markdown-mode")
+(declare-function 'gfm-mode "ext:markdown-mode")
+
+;;; FIXES:
+(defun poly-markdown-remove-markdown-hooks (&rest _)
+  "Get rid of aggressive hooks (VS[02-09-2018]: probably no longer necessary."
+  (remove-hook 'window-configuration-change-hook 'markdown-fontify-buffer-wiki-links t)
+  (remove-hook 'after-change-functions 'markdown-check-change-for-wiki-link t))
+
+(define-hostmode poly-markdown-hostmode
+  :mode 'markdown-mode
+  :init-functions '(poly-markdown-remove-markdown-hooks))
+
+;;;###autoload  (autoload 'poly-markdown-mode "poly-markdown-ts")
+(define-polymode poly-markdown-mode
+  :hostmode 'poly-markdown-hostmode
+  :innermodes '(poly-markdown-fenced-code-innermode))
+
+;;; Polymode for GitHub Flavored Markdown
+(define-hostmode poly-gfm-hostmode poly-markdown-hostmode
+  :mode 'gfm-mode)
+
+;;;###autoload  (autoload 'poly-gfm-mode "poly-markdown")
+(define-polymode poly-gfm-mode poly-markdown-mode
+  :hostmode 'poly-gfm-hostmode)
 
 (provide 'poly-markdown-ts)
 ;;; poly-markdown-ts.el ends here
