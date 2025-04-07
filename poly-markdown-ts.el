@@ -73,7 +73,7 @@
 (define-hostmode poly-gfm-hostmode poly-markdown-hostmode
   :mode 'gfm-mode)
 
-;;;###autoload  (autoload 'poly-gfm-mode "poly-markdown")
+;;;###autoload  (autoload 'poly-gfm-mode "poly-markdown-ts")
 (define-polymode poly-gfm-mode poly-markdown-mode
   :hostmode 'poly-gfm-hostmode)
 
